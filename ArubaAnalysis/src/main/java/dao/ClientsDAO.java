@@ -3,6 +3,7 @@ package dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,19 +11,89 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dto.Clients;
 
 public class ClientsDAO {
+	public String getBehindTheDateClients(LocalDate startDate, LocalDate endDate) {
+		String jsonResult = "";
+
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = GetConnection.getConnection();
+
+			// 쿼리 실행
+			String query = "SELECT * FROM ap_using_person WHERE current_times >= '" + startDate
+					+ "' AND current_times <= '" + endDate + "'";
+			System.out.println(query);
+			pstmt = conn.prepareStatement(query);
+			rs = pstmt.executeQuery();
+
+			// 결과 데이터를 List<Map>으로 변환
+			List<Map<String, Object>> resultList = new ArrayList<>();
+
+			while (rs.next()) {
+				Map<String, Object> row = new HashMap<>();
+				row.put("no", rs.getInt("no"));
+				row.put("cnt", rs.getInt("cnt"));
+				row.put("rx", rs.getString("rx"));
+				row.put("tx", rs.getString("tx"));
+				row.put("current_times", rs.getTimestamp("current_times"));
+
+				resultList.add(row);
+			}
+
+			// JSON 변환
+			ObjectMapper objectMapper = new ObjectMapper();
+			jsonResult = objectMapper.writeValueAsString(resultList);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			// 리소스 해제
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			if (pstmt != null)
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+
+		return jsonResult;
+	}
+
 	public Clients getMaximumTraffic(LocalDate date) {
 		Clients maxClients = new Clients();
 
 		try {
 			Connection connection = GetConnection.getConnection();
-			String sql = "SELECT * FROM ap_using_person WHERE DATE(current_times) = '" + date + "' ORDER BY cnt DESC LIMIT 1";
+			String sql = "SELECT * FROM ap_using_person WHERE DATE(current_times) = '" + date
+					+ "' ORDER BY cnt DESC LIMIT 1";
 			PreparedStatement pstmt = connection.prepareStatement(sql);
 			ResultSet resultSet = pstmt.executeQuery();
-			
+
 			if (resultSet.next()) {
 				maxClients.setNo(resultSet.getInt("no"));
 				maxClients.setCnt(resultSet.getInt("cnt"));
