@@ -8,6 +8,24 @@ public class Clients {
 	private Timestamp current_times;
 	private String tx;
 	private String rx;
+	private double rxTraffic;
+	private double txTraffic;
+
+	public double getRxTraffic() {
+		return rxTraffic;
+	}
+
+	public void setRxTraffic(double rxTraffic) {
+		this.rxTraffic = rxTraffic;
+	}
+
+	public double getTxTraffic() {
+		return txTraffic;
+	}
+
+	public void setTxTraffic(double txTraffic) {
+		this.txTraffic = txTraffic;
+	}
 
 	public int getNo() {
 		return no;

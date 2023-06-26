@@ -41,8 +41,8 @@ button:hover {
 			<h1>무선랜 통계</h1>
 		</div>
 		<div>
-			<button onclick="location.href='clients.jsp'">사용자 통계</button>
-			<button onclick="location.href='traffic.jsp'">트래픽 통계</button>
+			<button onclick="location.href='clients-c3js.jsp'">기간별 통계</button>
+			<button onclick="location.href='traffic.jsp'">비교 통계</button>
 		</div>
 	</div>
 
