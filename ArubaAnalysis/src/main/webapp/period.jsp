@@ -59,6 +59,9 @@ input[type=date]::target {
 </head>
 <body>
 	<div class="container">
+		<div>
+			<h1>무선랜 기간별 통계</h1>
+		</div>
 		<div class="date-input">
 			<label for="startDate">시작 날짜:</label>
 			<input type="date" id="startDate">
